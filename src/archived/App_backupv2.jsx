@@ -6,9 +6,9 @@ import {
   DollarSign, Activity, ChevronDown, ChevronUp, 
   Zap, Brain, Heart, GraduationCap, Briefcase, Terminal, Cpu, ShieldCheck, Loader2, RefreshCw
 } from 'lucide-react';
-import { VectorLogoComponent } from './Logo';
-import { ScenariosComponentV2 } from './scenarios/scenarioV2';
-import { AI_MODELS_LIST } from './models/models';
+import { VectorLogoComponent } from '../Logo';
+import { ScenariosComponentV2 } from '../scenarios/scenarioV2';
+import { AI_MODELS_LIST } from '../models/models';
 
 // --- DATA: PRE-BUILT SCENARIOS ---
 const SCENARIOS = ScenariosComponentV2;

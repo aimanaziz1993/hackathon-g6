@@ -1,0 +1,1 @@
+export const DEFAULT_AGENT_MODEL = "gemini-2.5-flash";
