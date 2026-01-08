@@ -247,13 +247,16 @@ USER'S BURNING QUESTION:
   "roadmap": [
     { "year": "YYYY", "title": "Milestone Name", "desc": "Specific financial achievement." }
   ],
-  "mermaidCode": "gantt\\n    title Strategic Timeline\\n    dateFormat YYYY-MM-DD\\n    section Foundations\\n    Emergency Fund :active, crit, 2026-01-01, 90d"
+  "mermaidCode": "gantt\\n title Strategic Timeline\\n dateFormat YYYY-MM-DD\\n section Strategy\\n Start :milestone, 2026-01-01, 0d\\n Clear Debt :crit, 2026-02-01, 90d"
 }
 
-### MERMAID SYNTAX RULES (STRICT):
-- Dates MUST be YYYY-MM-DD.
-- No invalid characters in task names.
-- Section names: "Foundations", "Debt Attack", "Wealth Building".
+MERMAID GANTT RULES (CRITICAL):
+- Syntax: TaskName :type, start_date, duration
+- Example: "Clear CC Debt :crit, 2026-02-01, 90d"
+- Type MUST be one of: crit, active, done, milestone
+- Date format MUST be YYYY-MM-DD.
+- ALWAYS put a colon (:) before the type.
+- NO special characters in TaskName (like colons or brackets).
     `;
 
     // Malay Prompt (Natural & Precise)
@@ -278,6 +281,13 @@ ARAHAN (LOGIK CFP):
 2. **Semakan DSR (Nisbah Khidmat Hutang):** Had maksimum bank ialah 70%. Jika lebih, beri amaran keras.
 3. **Psikologi:** Diagnosis tabiat kewangan (contoh: "Lifestyle Creep", "Sandwich Generation"). Gunakan nada "Tough Love" yang profesional.
 
+PERATURAN MERMAID (PENTING):
+- Sintaks: NamaTugasan :jenis, tarikh_mula, durasi
+- Contoh: "Bayar Hutang :crit, 2026-02-01, 90d"
+- Jenis MESTI salah satu: crit, active, done, milestone
+- Tarikh MESTI YYYY-MM-DD.
+- WAJIB letak titik bertindih (:) sebelum jenis.
+
 FORMAT OUTPUT (JSON SAHAJA - BAHASA MELAYU):
 Sila pastikan semua output teks adalah dalam Bahasa Melayu yang natural (bukan terjemahan robot). Gunakan istilah seperti "Wang Kecemasan", "Aliran Tunai", "Hutang Jahat".
 {
@@ -300,10 +310,6 @@ Sila pastikan semua output teks adalah dalam Bahasa Melayu yang natural (bukan t
   ],
   "mermaidCode": "gantt\\n    title Garis Masa Strategik\\n    dateFormat YYYY-MM-DD\\n    section Fasa 1\\n    Mula :milestone, 2026-01-01, 0d"
 }
-    ### MERMAID SYNTAX RULES (STRICT):
-  - Dates MUST be YYYY-MM-DD.
-  - No invalid characters in task names.
-  - Section names: "Foundations", "Debt Attack", "Wealth Building".
 `;
 
     return lang === 'my' ? myPrompt : enPrompt;
