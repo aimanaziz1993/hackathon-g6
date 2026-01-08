@@ -36,14 +36,39 @@ const CONTEXT_TAGS = [
   { id: "Freelancer", label: "💻 Variable Income" },
 ];
 
-// --- COMPONENT: MERMAID CHART ---
+// --- COMPONENT: ROBUST MERMAID CHART ---
 const MermaidChart = ({ chartCode, lang }) => {
   const chartRef = useRef(null);
   const [error, setError] = useState(null);
   
+  // SANITIZER FUNCTION: Fixes common AI syntax errors
+  const sanitizeCode = (code) => {
+    let clean = code
+      // 1. Remove Markdown code blocks if present
+      .replace(/```mermaid/g, '').replace(/```/g, '')
+      
+      // 2. Fix missing colons for task types
+      // Pattern: "Task Name active," -> "Task Name : active,"
+      .replace(/^(\s*)([^:\n\r]+)\s+(crit|active|done|milestone)/gm, '$1$2 : $3')
+      
+      // 3. Fix "crit1" or "crit0" typos
+      .replace(/crit[0-9]+/g, 'crit')
+      
+      // 4. Ensure space after colon
+      .replace(/:([a-z])/g, ': $1')
+      
+      // 5. Force Date Format (Slash to Dash)
+      // Change 2026/01/01 to 2026-01-01
+      .replace(/(\d{4})\/(\d{2})\/(\d{2})/g, '$1-$2-$3');
+
+    return clean.trim();
+  };
+
   useEffect(() => {
     if (chartCode && chartRef.current) {
       setError(null);
+      
+      // Initialize configuration
       mermaid.initialize({ 
         startOnLoad: true, theme: 'base', securityLevel: 'loose',
         themeVariables: {
@@ -56,19 +81,31 @@ const MermaidChart = ({ chartCode, lang }) => {
         },
         gantt: {
           titleTopMargin: 25, barHeight: 50, barGap: 10, topPadding: 75, sidePadding: 75,
-          fontSize: 14, sectionFontSize: 12, numberSectionStyles: 2, axisFormat: '%Y',
+          fontSize: 18, sectionFontSize: 20, numberSectionStyles: 2, axisFormat: '%Y',
         }
       });
       
       const renderChart = async () => {
         try {
           chartRef.current.innerHTML = '';
-          const cleanCode = chartCode.replace(/:([a-z])/g, ': $1').replace(/crit1/g, 'crit');
+          const cleanCode = sanitizeCode(chartCode); // Apply Sanitizer
+          
+          // Unique ID for every render to prevent caching collisions
           const { svg } = await mermaid.render(`mermaid-svg-${Date.now()}`, cleanCode);
           chartRef.current.innerHTML = svg;
+          
+          // CSS Fixes for SVG sizing
           const svgElement = chartRef.current.querySelector('svg');
-          if (svgElement) { svgElement.style.maxWidth = 'none'; svgElement.style.height = 'auto'; svgElement.style.fontWeight = 'bold'; }
-        } catch (err) { console.error("Mermaid Error:", err); setError(err.message); }
+          if (svgElement) { 
+            svgElement.style.maxWidth = 'none'; 
+            svgElement.style.height = 'auto'; 
+            svgElement.style.fontWeight = 'bold'; 
+          }
+        } catch (err) { 
+          console.error("Mermaid Render Error:", err); 
+          // Show a user-friendly error instead of crashing
+          setError("Graph syntax invalid. Showing raw data instead.");
+        }
       };
       renderChart();
     }
@@ -83,7 +120,14 @@ const MermaidChart = ({ chartCode, lang }) => {
         <span className="text-[10px] text-emerald-500/80 uppercase font-mono tracking-widest border border-emerald-900 px-2 py-1 rounded print:hidden">Scroll →</span>
       </div>
       <div className="overflow-x-auto p-6 bg-[#0B0F19] print:bg-white">
-        {error ? <div className="text-red-400 text-xs font-mono">{error}</div> : <div ref={chartRef} className="min-w-[1200px] flex justify-center"></div>}
+        {error ? (
+          <div className="text-red-400 text-xs font-mono p-4 border border-red-900/50 rounded bg-red-900/10">
+             <p className="font-bold mb-2">Visual Generation Failed (Syntax Error)</p>
+             <pre className="whitespace-pre-wrap text-gray-500">{chartCode}</pre>
+          </div>
+        ) : (
+          <div ref={chartRef} className="min-w-[1200px] flex justify-center"></div>
+        )}
       </div>
     </div>
   );
