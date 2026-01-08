@@ -37,38 +37,121 @@ const CONTEXT_TAGS = [
 ];
 
 // --- COMPONENT: ROBUST MERMAID CHART ---
-const MermaidChart = ({ chartCode, lang }) => {
+// const MermaidChart = ({ chartCode, lang }) => {
+//   const chartRef = useRef(null);
+//   const [error, setError] = useState(null);
+  
+//   // SANITIZER FUNCTION: Fixes common AI syntax errors
+//   const sanitizeCode = (code) => {
+//     let clean = code
+//       // 1. Remove Markdown code blocks if present
+//       .replace(/```mermaid/g, '').replace(/```/g, '')
+      
+//       // 2. Fix missing colons for task types
+//       // Pattern: "Task Name active," -> "Task Name : active,"
+//       .replace(/^(\s*)([^:\n\r]+)\s+(crit|active|done|milestone)/gm, '$1$2 : $3')
+      
+//       // 3. Fix "crit1" or "crit0" typos
+//       .replace(/crit[0-9]+/g, 'crit')
+      
+//       // 4. Ensure space after colon
+//       .replace(/:([a-z])/g, ': $1')
+      
+//       // 5. Force Date Format (Slash to Dash)
+//       // Change 2026/01/01 to 2026-01-01
+//       .replace(/(\d{4})\/(\d{2})\/(\d{2})/g, '$1-$2-$3');
+
+//     return clean.trim();
+//   };
+
+//   useEffect(() => {
+//     if (chartCode && chartRef.current) {
+//       setError(null);
+      
+//       // Initialize configuration
+//       mermaid.initialize({ 
+//         startOnLoad: true, theme: 'base', securityLevel: 'loose',
+//         themeVariables: {
+//           darkMode: true, fontFamily: 'ui-sans-serif, system-ui, sans-serif', fontSize: '18px',
+//           primaryColor: '#10B981', primaryTextColor: '#ffffff', primaryBorderColor: '#10B981',
+//           lineColor: '#34D399', secondaryColor: '#064E3B', tertiaryColor: '#1f2937',
+//           excludeBkgColor: '#1f2937', sectionBkgColor: '#111827', taskBorderColor: '#10B981',
+//           taskBkgColor: '#059669', activeTaskBorderColor: '#34D399', activeTaskBkgColor: '#10B981',
+//           gridColor: '#374151', titleColor: '#ffffff', sectionTextColor: '#10B981'
+//         },
+//         gantt: {
+//           titleTopMargin: 25, barHeight: 50, barGap: 10, topPadding: 75, sidePadding: 75,
+//           fontSize: 18, sectionFontSize: 20, numberSectionStyles: 2, axisFormat: '%Y',
+//         }
+//       });
+      
+//       const renderChart = async () => {
+//         try {
+//           chartRef.current.innerHTML = '';
+//           const cleanCode = sanitizeCode(chartCode); // Apply Sanitizer
+          
+//           // Unique ID for every render to prevent caching collisions
+//           const { svg } = await mermaid.render(`mermaid-svg-${Date.now()}`, cleanCode);
+//           chartRef.current.innerHTML = svg;
+          
+//           // CSS Fixes for SVG sizing
+//           const svgElement = chartRef.current.querySelector('svg');
+//           if (svgElement) { 
+//             svgElement.style.maxWidth = 'none'; 
+//             svgElement.style.height = 'auto'; 
+//             svgElement.style.fontWeight = 'bold'; 
+//           }
+//         } catch (err) { 
+//           console.error("Mermaid Render Error:", err); 
+//           // Show a user-friendly error instead of crashing
+//           setError("Graph syntax invalid. Showing raw data instead.");
+//         }
+//       };
+//       renderChart();
+//     }
+//   }, [chartCode]);
+
+//   return (
+//     <div className="w-full bg-gray-900 border border-gray-700 rounded-xl mt-8 animate-fadeIn overflow-hidden shadow-2xl print:border-gray-300 print:bg-white">
+//       <div className="p-4 border-b border-gray-800 bg-gray-900/50 flex justify-between items-center print:bg-gray-100 print:border-gray-300">
+//         <h4 className="text-sm font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2 print:text-black">
+//           <Activity size={16} className="text-emerald-500" /> {TRANSLATIONS[lang].label_timeline}
+//         </h4>
+//         <span className="text-[10px] text-emerald-500/80 uppercase font-mono tracking-widest border border-emerald-900 px-2 py-1 rounded print:hidden">Scroll →</span>
+//       </div>
+//       <div className="overflow-x-auto p-6 bg-[#0B0F19] print:bg-white">
+//         {error ? (
+//           <div className="text-red-400 text-xs font-mono p-4 border border-red-900/50 rounded bg-red-900/10">
+//              <p className="font-bold mb-2">Visual Generation Failed (Syntax Error)</p>
+//              <pre className="whitespace-pre-wrap text-gray-500">{chartCode}</pre>
+//           </div>
+//         ) : (
+//           <div ref={chartRef} className="min-w-[1200px] flex justify-center"></div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+const MermaidChart = ({ chartCode, roadmapData, lang }) => {
   const chartRef = useRef(null);
   const [error, setError] = useState(null);
-  
-  // SANITIZER FUNCTION: Fixes common AI syntax errors
-  const sanitizeCode = (code) => {
-    let clean = code
-      // 1. Remove Markdown code blocks if present
-      .replace(/```mermaid/g, '').replace(/```/g, '')
-      
-      // 2. Fix missing colons for task types
-      // Pattern: "Task Name active," -> "Task Name : active,"
-      .replace(/^(\s*)([^:\n\r]+)\s+(crit|active|done|milestone)/gm, '$1$2 : $3')
-      
-      // 3. Fix "crit1" or "crit0" typos
-      .replace(/crit[0-9]+/g, 'crit')
-      
-      // 4. Ensure space after colon
-      .replace(/:([a-z])/g, ': $1')
-      
-      // 5. Force Date Format (Slash to Dash)
-      // Change 2026/01/01 to 2026-01-01
-      .replace(/(\d{4})\/(\d{2})\/(\d{2})/g, '$1-$2-$3');
 
-    return clean.trim();
+  // SANITIZER: Same as before
+  const sanitizeCode = (code) => {
+    return code
+      .replace(/```mermaid/g, '').replace(/```/g, '')
+      .replace(/^(\s*)([^:\n\r]+)\s+(crit|active|done|milestone)/gm, '$1$2 : $3')
+      .replace(/crit[0-9]+/g, 'crit')
+      .replace(/:([a-z])/g, ': $1')
+      .replace(/(\d{4})\/(\d{2})\/(\d{2})/g, '$1-$2-$3')
+      .trim();
   };
 
   useEffect(() => {
     if (chartCode && chartRef.current) {
       setError(null);
-      
-      // Initialize configuration
+      // Initialize Mermaid (Desktop View)
       mermaid.initialize({ 
         startOnLoad: true, theme: 'base', securityLevel: 'loose',
         themeVariables: {
@@ -81,20 +164,16 @@ const MermaidChart = ({ chartCode, lang }) => {
         },
         gantt: {
           titleTopMargin: 25, barHeight: 50, barGap: 10, topPadding: 75, sidePadding: 75,
-          fontSize: 18, sectionFontSize: 20, numberSectionStyles: 2, axisFormat: '%Y',
+          fontSize: 14, sectionFontSize: 12, numberSectionStyles: 2, axisFormat: '%Y',
         }
       });
       
       const renderChart = async () => {
         try {
           chartRef.current.innerHTML = '';
-          const cleanCode = sanitizeCode(chartCode); // Apply Sanitizer
-          
-          // Unique ID for every render to prevent caching collisions
+          const cleanCode = sanitizeCode(chartCode);
           const { svg } = await mermaid.render(`mermaid-svg-${Date.now()}`, cleanCode);
           chartRef.current.innerHTML = svg;
-          
-          // CSS Fixes for SVG sizing
           const svgElement = chartRef.current.querySelector('svg');
           if (svgElement) { 
             svgElement.style.maxWidth = 'none'; 
@@ -102,9 +181,8 @@ const MermaidChart = ({ chartCode, lang }) => {
             svgElement.style.fontWeight = 'bold'; 
           }
         } catch (err) { 
-          console.error("Mermaid Render Error:", err); 
-          // Show a user-friendly error instead of crashing
-          setError("Graph syntax invalid. Showing raw data instead.");
+          console.error("Mermaid Error:", err); 
+          setError("Visual timeline unavailable. See text roadmap below.");
         }
       };
       renderChart();
@@ -112,23 +190,64 @@ const MermaidChart = ({ chartCode, lang }) => {
   }, [chartCode]);
 
   return (
-    <div className="w-full bg-gray-900 border border-gray-700 rounded-xl mt-8 animate-fadeIn overflow-hidden shadow-2xl print:border-gray-300 print:bg-white">
-      <div className="p-4 border-b border-gray-800 bg-gray-900/50 flex justify-between items-center print:bg-gray-100 print:border-gray-300">
+    <div className="w-full mt-8 animate-fadeIn">
+      
+      {/* HEADER */}
+      <div className="bg-gray-900 border border-gray-700 rounded-t-xl p-4 flex justify-between items-center">
         <h4 className="text-sm font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2 print:text-black">
-          <Activity size={16} className="text-emerald-500" /> {TRANSLATIONS[lang].label_timeline}
+          <Activity size={16} className="text-emerald-500" /> 
+          {TRANSLATIONS[lang].label_timeline}
         </h4>
-        <span className="text-[10px] text-emerald-500/80 uppercase font-mono tracking-widest border border-emerald-900 px-2 py-1 rounded print:hidden">Scroll →</span>
+        {/* Helper Badge */}
+        <span className="hidden md:inline-block text-[10px] text-emerald-500/80 uppercase font-mono tracking-widest border border-emerald-900 px-2 py-1 rounded">
+           Scroll →
+        </span>
+        <span className="md:hidden text-[10px] text-emerald-500/80 uppercase font-mono tracking-widest border border-emerald-900 px-2 py-1 rounded">
+           Mobile View
+        </span>
       </div>
-      <div className="overflow-x-auto p-6 bg-[#0B0F19] print:bg-white">
-        {error ? (
-          <div className="text-red-400 text-xs font-mono p-4 border border-red-900/50 rounded bg-red-900/10">
-             <p className="font-bold mb-2">Visual Generation Failed (Syntax Error)</p>
-             <pre className="whitespace-pre-wrap text-gray-500">{chartCode}</pre>
-          </div>
-        ) : (
-          <div ref={chartRef} className="min-w-[1200px] flex justify-center"></div>
-        )}
+
+      {/* --- DESKTOP VIEW (MERMAID SCROLLABLE) --- */}
+      <div className="hidden md:block bg-[#0B0F19] border-x border-b border-gray-700 rounded-b-xl overflow-hidden shadow-2xl">
+        <div className="overflow-x-auto p-6 custom-scrollbar">
+          {error ? (
+            <div className="text-red-400 text-xs font-mono p-4">{error}</div>
+          ) : (
+            <div ref={chartRef} className="min-w-[1200px] flex justify-center"></div>
+          )}
+        </div>
       </div>
+
+      {/* --- MOBILE VIEW (VERTICAL NATIVE LIST) --- */}
+      <div className="md:hidden bg-[#0B0F19] border-x border-b border-gray-700 rounded-b-xl p-6">
+        <div className="relative border-l-2 border-emerald-900/50 ml-3 space-y-8">
+          {roadmapData && roadmapData.map((step, idx) => (
+            <div key={idx} className="relative pl-8">
+              {/* Timeline Dot */}
+              <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-gray-900 border-2 border-emerald-500 shadow-[0_0_10px_#10B981]"></div>
+              
+              {/* Year Badge */}
+              <div className="inline-block bg-emerald-900/30 text-emerald-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded mb-1 border border-emerald-500/20">
+                {step.year}
+              </div>
+              
+              {/* Content */}
+              <h4 className="text-lg font-bold text-white leading-tight">{step.title}</h4>
+              <p className="text-sm text-gray-400 mt-2 leading-relaxed border-l-2 border-gray-800 pl-3">
+                {step.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+        
+        {/* Footer Hint */}
+        <div className="mt-8 text-center">
+            <p className="text-[10px] text-gray-600 uppercase tracking-widest">
+                Switch to Desktop for Gantt Chart View
+            </p>
+        </div>
+      </div>
+
     </div>
   );
 };
@@ -544,7 +663,7 @@ Sila pastikan semua output teks adalah dalam Bahasa Melayu yang natural (bukan t
             </div>
 
             {/* VISUALS & ROADMAP */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print:block">
+            {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print:block">
               <div className="lg:col-span-2 print:mb-6">{aiResponse.mermaidCode && <MermaidChart chartCode={aiResponse.mermaidCode} lang={lang} />}</div>
               <div className="lg:col-span-1 bg-gray-900/50 p-6 rounded-xl border border-gray-700 mt-6 h-fit print:bg-white print:border-black print:text-black">
                 <h4 className="text-xs font-bold text-gray-500 mb-4 uppercase tracking-wider print:text-black">{t.label_milestones}</h4>
@@ -559,7 +678,37 @@ Sila pastikan semua output teks adalah dalam Bahasa Melayu yang natural (bukan t
                   ))}
                 </div>
               </div>
+            </div> */}
+
+            {/* VISUALS & ROADMAP */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print:block">
+              
+              <div className="lg:col-span-2 print:mb-6">
+                {aiResponse.mermaidCode && (
+                  <MermaidChart 
+                    chartCode={aiResponse.mermaidCode} 
+                    roadmapData={aiResponse.roadmap} 
+                    lang={lang} 
+                  />
+                )}
+              </div>
+
+              <div className="hidden lg:block lg:col-span-1 bg-gray-900/50 p-6 rounded-xl border border-gray-700 mt-6 h-fit print:bg-white print:border-black print:text-black">
+                <h4 className="text-xs font-bold text-gray-500 mb-4 uppercase tracking-wider print:text-black">{t.label_milestones}</h4>
+                <div className="space-y-6 relative border-l border-gray-700 ml-2 print:border-black">
+                  {aiResponse.roadmap.map((step, idx) => (
+                    <div key={idx} className="pl-6 relative">
+                      <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10B981] print:bg-black print:shadow-none"></div>
+                      <div className="text-xs font-mono text-emerald-500 mb-1 print:text-black">{step.year}</div>
+                      <div className="text-sm font-bold text-white print:text-black">{step.title}</div>
+                      <div className="text-xs text-gray-400 mt-1 print:text-black">{step.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </div>
+
           </div>
         )}
       </div>
