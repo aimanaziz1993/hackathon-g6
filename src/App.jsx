@@ -13,6 +13,7 @@ import { ScenariosComponentV2 } from './scenarios/scenarioV2';
 import { AI_MODELS_LIST } from './models/models';
 import { DEFAULT_AGENT_MODEL } from './models/default';
 import { TRANSLATIONS_DICT } from './locale/translations';
+import FinancialLoader from './components/FinancialLoader';
 
 const AI_MODELS = AI_MODELS_LIST;
 const DEFAULT_AGENT = DEFAULT_AGENT_MODEL;
@@ -433,10 +434,11 @@ Sila pastikan semua output teks adalah dalam Bahasa Melayu yang natural (bukan t
 
         {/* --- LOADING --- */}
         {status === 'analyzing' && (
-          <div className="flex flex-col items-center justify-center py-24 animate-pulse">
-            <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-8 relative"><div className="absolute inset-0 border-t-2 border-emerald-500 rounded-full animate-spin"></div><Bot size={32} className="text-emerald-400" /></div>
-            <div className="space-y-2 text-center"><h3 className="text-2xl font-bold text-white">{t.analyzing_title}</h3><p className="text-xs font-mono text-emerald-500 uppercase tracking-widest">{t.agent_model}: {selectedModel}</p><div className="text-sm text-gray-500 font-mono mt-2 flex items-center justify-center gap-2"><Loader2 size={14} className="animate-spin" />{loadingMsg}</div></div>
-          </div>
+          // <div className="flex flex-col items-center justify-center py-24 animate-pulse">
+          //   <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-8 relative"><div className="absolute inset-0 border-t-2 border-emerald-500 rounded-full animate-spin"></div><Bot size={32} className="text-emerald-400" /></div>
+          //   <div className="space-y-2 text-center"><h3 className="text-2xl font-bold text-white">{t.analyzing_title}</h3><p className="text-xs font-mono text-emerald-500 uppercase tracking-widest">{t.agent_model}: {selectedModel}</p><div className="text-sm text-gray-500 font-mono mt-2 flex items-center justify-center gap-2"><Loader2 size={14} className="animate-spin" />{loadingMsg}</div></div>
+          // </div>
+          <FinancialLoader />
         )}
 
         {/* --- RESULTS DASHBOARD --- */}
