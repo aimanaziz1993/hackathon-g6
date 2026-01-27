@@ -428,8 +428,8 @@ Sila pastikan semua output teks adalah dalam Bahasa Melayu yang natural (bukan t
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <div className="p-4 bg-emerald-500/20 rounded-2xl text-emerald-400 h-min print:hidden"><Activity size={32} /></div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2 print:text-black">{t.results_hero_title}</h2>
-                    <p className="text-gray-300 text-lg leading-relaxed mb-4 print:text-black">{aiResponse.summary}</p>
+                    <h2 className="text-2xl font-bold text-white mb-2 print:text-white">{t.results_hero_title}</h2>
+                    <p className="text-gray-300 text-lg leading-relaxed mb-4 print:text-white">{aiResponse.summary}</p>
                     <div className="flex flex-wrap gap-4">
                       <div className="bg-gray-800/80 px-4 py-2 rounded-lg border border-gray-700 backdrop-blur-sm print:bg-gray-100 print:border-gray-300"><span className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1 print:text-gray-600">{t.label_surplus}</span><span className={`text-xl font-bold text-emerald-400 print:text-black ${blurClass}`}>{aiResponse.surplus}</span></div>
                       <div className="bg-gray-800/80 px-4 py-2 rounded-lg border border-gray-700 backdrop-blur-sm print:bg-gray-100 print:border-gray-300"><span className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1 print:text-gray-600">{t.label_psychology}</span><span className="text-sm font-medium text-white print:text-black">{aiResponse.psychology}</span></div>
